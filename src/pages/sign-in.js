@@ -22,7 +22,7 @@ export default function SignIn() {
     return Firebase.auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        history.push(ROUTES.BROWSE);
+        history(ROUTES.BROWSE);
       })
       .catch((error) => {
         setEmail("");
