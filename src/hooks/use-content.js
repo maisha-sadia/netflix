@@ -17,7 +17,7 @@ export default function useContent(target) {
         setContent(allContent);
       })
       .catch((error) => {
-        console.lof(error.message);
+        console.log(error.message);
       });
   }, []);
   return { [target]: content };
