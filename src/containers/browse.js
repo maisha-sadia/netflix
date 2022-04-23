@@ -1,16 +1,18 @@
-import { useState, useContext, useEffect } from "react";
-import { Card, Header, Loading } from "../components";
-import { FirebaseContext } from "../context/firebase";
-import { ProfileSelectionContainer } from "./profiles";
+import React, { useState, useEffect, useContext } from "react";
+import Fuse from "fuse.js";
+import { Card, Header, Loading, Player } from "../components";
 import * as ROUTES from "../constants/routes";
 import logo from "../logo.svg";
+import { FirebaseContext } from "../context/firebase";
+import { ProfileSelectionContainer } from "./profiles";
+import { FooterContainer } from "./footer";
 
 export function BrowseContainer({ slides }) {
-  const [Category, setCategory] = useState("series");
-  const [SearchTerm, setSearchTerm] = useState();
+  const [category, setCategory] = useState("series");
   const [profile, setProfile] = useState({});
-  const [loading, setLoading] = useState({});
-  const [SlideRows, setSlideRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [slideRows, setSlideRows] = useState([]);
 
   const { Firebase } = useContext(FirebaseContext);
   const user = Firebase.auth().currentUser || {};
@@ -22,57 +24,105 @@ export function BrowseContainer({ slides }) {
   }, [profile.displayName]);
 
   useEffect(() => {
-    setSlideRows(slides[Category]);
-  }, [slides, Category]);
+    setSlideRows(slides[category]);
+  }, [slides, category]);
+
+  useEffect(() => {
+    const fuse = new Fuse(slideRows, {
+      keys: ["data.description", "data.title", "data.genre"],
+    });
+    const results = fuse.search(searchTerm).map(({ item }) => item);
+
+    if (slideRows.length > 0 && searchTerm.length > 3 && results.length > 0) {
+      setSlideRows(results);
+    } else {
+      setSlideRows(slides[category]);
+    }
+  }, [searchTerm]);
 
   return profile.displayName ? (
     <>
       {loading ? <Loading src={user.photoURL} /> : <Loading.ReleaseBody />}
-      <Header src="joker1">
+
+      <Header src="joker1" dontShowOnSmallViewPort>
         <Header.Frame>
           <Header.Group>
-            <Header.Logo to={ROUTES.HOME} src={logo} alt="Netfilx Logo" />
-            <Header.TextLink>Series</Header.TextLink>
-            <Header.TextLink>Films</Header.TextLink>
+            <Header.Logo to={ROUTES.HOME} src={logo} alt="Netflix" />
+            <Header.TextLink
+              active={category === "series" ? "true" : "false"}
+              onClick={() => setCategory("series")}
+            >
+              Series
+            </Header.TextLink>
+            <Header.TextLink
+              active={category === "films" ? "true" : "false"}
+              onClick={() => setCategory("films")}
+            >
+              Films
+            </Header.TextLink>
           </Header.Group>
           <Header.Group>
             <Header.Search
-              searchTerm={SearchTerm}
+              searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
             <Header.Profile>
-              <Header.Picture src={user.photoURL} alt="Profile picture" />
+              <Header.Picture src={user.photoURL} />
               <Header.Dropdown>
                 <Header.Group>
-                  <Header.Picture src={user.photoURL} alt="Profile picture" />
+                  <Header.Picture src={user.photoURL} />
                   <Header.TextLink>{user.displayName}</Header.TextLink>
                 </Header.Group>
                 <Header.Group>
                   <Header.TextLink onClick={() => Firebase.auth().signOut()}>
-                    Sign Out
+                    Sign out
                   </Header.TextLink>
                 </Header.Group>
               </Header.Dropdown>
             </Header.Profile>
           </Header.Group>
         </Header.Frame>
+
         <Header.Feature>
           <Header.FeatureCallOut>Watch Joker Now</Header.FeatureCallOut>
           <Header.Text>
-            Compiled successfully! You can now view netflix in the browser.
-            Local: http://localhost:3000 On Your Network:
-            http://192.168.0.167:3000 Note that the development build is not
-            optimized. To create a production build, use npm run build. assets
-            by status 3.18 MiB [cached] 2 assets assets by path . 680 bytes
-            asset index.html 402 bytes [emitted] asset asset-manifest.json 278
-            bytes [emitted] cached modules 2.94 MiB (javascript) 28.1 KiB
-            (runtime) [cached] 190 modules ./src/containers/browse.js 3.35 KiB
-            [built] webpack 5.69.1 compiled successfully in 115 ms
+            Forever alone in a crowd, failed comedian Arthur Fleck seeks
+            connection as he walks the streets of Gotham City. Arthur wears two
+            masks -- the one he paints for his day job as a clown, and the guise
+            he projects in a futile attempt to feel like he's part of the world
+            around him.
           </Header.Text>
           <Header.PlayButton>Play</Header.PlayButton>
         </Header.Feature>
       </Header>
-      <Card.Group></Card.Group>
+
+      <Card.Group>
+        {slideRows.map((slideItem) => (
+          <Card key={`${category}-${slideItem.title.toLowerCase()}`}>
+            <Card.Title>{slideItem.title}</Card.Title>
+            <Card.Entities>
+              {slideItem.data.map((item) => (
+                <Card.Item key={item.docId} item={item}>
+                  <Card.Image
+                    src={`/images/${category}/${item.genre}/${item.slug}/small.jpg`}
+                  />
+                  <Card.Meta>
+                    <Card.SubTitle>{item.title}</Card.SubTitle>
+                    <Card.Text>{item.description}</Card.Text>
+                  </Card.Meta>
+                </Card.Item>
+              ))}
+            </Card.Entities>
+            <Card.Feature category={category}>
+              <Player>
+                <Player.Button />
+                <Player.Video src="/videos/bunny.mp4" />
+              </Player>
+            </Card.Feature>
+          </Card>
+        ))}
+      </Card.Group>
+      <FooterContainer />
     </>
   ) : (
     <ProfileSelectionContainer user={user} setProfile={setProfile} />
