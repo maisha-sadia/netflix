@@ -1,19 +1,13 @@
 import React from "react";
-import { Feature, OptForm } from "../components";
+import { Feature } from "../components";
 
 export function FeatureContainer() {
   return (
     <Feature>
-      <Feature.Title>Unlimited films, TV programmes and more.</Feature.Title>
-      <Feature.SubTitle>Watch anywhere. Cancel at any time.</Feature.SubTitle>
-      <OptForm>
-        <OptForm.Input placeholder="Email address" />
-        <OptForm.Button>Try it now</OptForm.Button>
-        <OptForm.Break />
-        <OptForm.Text>
-          Ready to watch? Enter your email to create or restart your membership.
-        </OptForm.Text>
-      </OptForm>
+      <Feature.Title>Welcome to the Web Project of 2022</Feature.Title>
+      <Feature.SubTitle>
+        This project is aimed to create a replicated version of Netflix
+      </Feature.SubTitle>
     </Feature>
   );
 }

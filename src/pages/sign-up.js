@@ -5,6 +5,8 @@ import { Form } from "../components";
 import { HeaderContainer } from "../containers/header";
 import { FooterContainer } from "../containers/footer";
 import * as ROUTES from "../constants/routes";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../lib/firebase.prod";
 
 export default function SignUp() {
   const history = useNavigate();
@@ -22,7 +24,7 @@ export default function SignUp() {
   const handleSignUp = (event) => {
     event.preventDefault();
 
-    return Firebase.auth()
+    Firebase.auth()
       .createUserWithEmailAndPassword(email, password)
       .then((result) =>
         result.user
@@ -41,6 +43,7 @@ export default function SignUp() {
         setPassword("");
         setError(error.message);
       });
+    setDoc(doc(db, "users", email), { watchList: [] });
   };
 
   return (

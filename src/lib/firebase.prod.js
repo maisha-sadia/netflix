@@ -2,6 +2,9 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import "firebase/compat/auth";
 import { seedDatabase } from "../seed";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
 
 // Configuration
 const firebaseConfig = {
@@ -14,6 +17,9 @@ const firebaseConfig = {
 };
 
 const Firebase = firebase.initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 // This is done to export data to Firebase
 // seedDatabase(Firebase);

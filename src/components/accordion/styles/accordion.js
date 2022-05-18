@@ -52,7 +52,7 @@ export const Header = styled.div`
   margin-bottom: 1px;
   font-size: 26px;
   font-weight: normal;
-  background: #303030;
+  background: rgba(200, 164, 183, 0.8);
   padding: 0.8em 1.2em 0.8em 1.2em;
   user-select: none;
   align-items: center;
