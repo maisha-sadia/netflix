@@ -235,22 +235,24 @@ export function BrowseContainer({ slides }) {
         </Card.Group>
       ) : (
         <Card.Group>
-          {savedMovies.map((slideItem) => (
-            <Card key={`${slideItem.id}-${slideItem.title.toLowerCase()}`}>
-              <Card.Title>{slideItem.title}</Card.Title>
-              <Card.Entities>
-                <Card.Item key={slideItem.id} item={slideItem}>
-                  <Card.Image src={slideItem.src} />
-                  <button
-                    onClick={() => deleteShow(slideItem.id)}
-                    className="absolute text-red-300 top-4 right-4"
-                  >
-                    Remove
-                  </button>
-                </Card.Item>
-              </Card.Entities>
-            </Card>
-          ))}
+          {savedMovies
+            ? savedMovies.map((slideItem) => (
+                <Card key={`${slideItem.id}-${slideItem.title.toLowerCase()}`}>
+                  <Card.Title>{slideItem.title}</Card.Title>
+                  <Card.Entities>
+                    <Card.Item key={slideItem.id} item={slideItem}>
+                      <Card.Image src={slideItem.src} />
+                      <button
+                        onClick={() => deleteShow(slideItem.id)}
+                        className="absolute text-red-300 top-4 right-4"
+                      >
+                        Remove
+                      </button>
+                    </Card.Item>
+                  </Card.Entities>
+                </Card>
+              ))
+            : null}
         </Card.Group>
       )}
 
